@@ -1,0 +1,9 @@
+pip install alembic
+alembic init <alembic>
+change env.py file -> add
+    from app.models import Base, Post, Vote,User
+    target_metadata = Base.metadata
+change alembic.ini -> add
+    sqlalchemy.url = postgresql+psycopg2://postgres:Niecsevinay100.@localhost/fastapi
+alembic revision --autogenerate -m "Initial migration"
+alembic upgrade head
