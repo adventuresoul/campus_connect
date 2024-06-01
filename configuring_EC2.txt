@@ -1,7 +1,0 @@
-first create ubuntu EC2 instance, while creating create a public key-pair, i.e .pem file and download it
-now in your system go to the keypair.pem location and execute chmod 600 mykeypair.pem
-Later ssh -i mykeypair.pem ubuntu@public_ip
-now you have logged into vm
-### INSTALLING pip ###
-sudo apt install python3-pip
-
