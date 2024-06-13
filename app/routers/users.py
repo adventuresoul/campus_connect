@@ -33,14 +33,14 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     else:
         return new_user
 
-@router.post("/profile/{id}", status_code=status.HTTP_202_ACCEPTED, response_model=schemas.Message)
-async def upload_profile(id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
+@router.post("/profile", status_code=status.HTTP_202_ACCEPTED, response_model=schemas.Message)
+async def upload_profile(file: UploadFile = File(...), db: Session = Depends(get_db), current_user = Depends(get_current_user)):
     if not file.content_type.startswith('image/'):
         return {"error": "Invalid file type"}
     # read the content
     contents = await file.read()
     # create new user profile phot obj
-    new_profile = models.Profile(user_id=id, photo=contents)
+    new_profile = models.Profile(user_id=current_user.id, photo=contents)
     # error handling
     try:
         db.add(new_profile)
