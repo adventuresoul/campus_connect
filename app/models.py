@@ -10,8 +10,8 @@ class Post(Base):
     __tablename__ = "Posts"
     id = Column(Integer, primary_key = True)
     title = Column(String, nullable = False)
-    content = Column(Text, nullable = False)
-    published = Column(Boolean, server_default = 'True', nullable = False)
+    content_text = Column(Text, nullable = False, default = "")
+    content_file = Column(LargeBinary)
     created_at = Column(TIMESTAMP(timezone = True), nullable = False, server_default = text('now()'))
     user_id = Column(Integer, ForeignKey("Users.id", ondelete="CASCADE"), nullable=False)
     # speial sqlalchemy feature that return the relationship of another table
@@ -36,7 +36,7 @@ class User(Base):
 class Profile(Base):
     __tablename__ = "ProfilePhoto"
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("Users.id", ondelete="CASCADE"), nullable=False),
+    user_id = Column(Integer, ForeignKey("Users.id", ondelete="CASCADE"))
     photo = Column(LargeBinary)
 
     def __repr__(self):

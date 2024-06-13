@@ -1,4 +1,5 @@
 from passlib.context import CryptContext
+import base64
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -23,3 +24,7 @@ def convert_post_to_dict(post, votes):
         },
         "votes": votes
     }
+
+# used for sending image data as a response
+def convert_bytes_to_base64(data: bytes) -> str:
+    return base64.b64encode(data).decode('utf-8') if data else None

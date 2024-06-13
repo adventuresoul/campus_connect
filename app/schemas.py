@@ -28,11 +28,10 @@ class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
-## Posts
+# posts
 class PostBase(BaseModel):
     title: str
     content: str
-    published: bool = False
 
 # request model
 class PostCreate(PostBase):
@@ -43,15 +42,15 @@ class PostUpdate(PostBase):
     pass
 
 # response model
-class Post(PostBase):
+class Post(BaseModel):
     id: int
-    created_at: datetime
-    owner_id: int
-    owner: User
+    title: str
+    content_text: str
+    content_file: Optional[str]  # Base64 encoded string
+    user_id: int
 
     class Config:
         orm_mode = True
-
 
 class PostOut(BaseModel):
     post: Post
@@ -59,6 +58,7 @@ class PostOut(BaseModel):
 
     class Config:
         orm_mode = True
+
 
 # Token Model
 class Token(BaseModel):
