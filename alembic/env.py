@@ -1,8 +1,8 @@
 from logging.config import fileConfig
-from app.models import Base, User, Post, Vote
+
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-
+from app.models import Base, User, Post, Vote, Profile
 from alembic import context
 
 # this is the Alembic Config object, which provides
