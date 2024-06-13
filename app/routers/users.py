@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, status, Response, APIRouter
+from fastapi import FastAPI, Depends, HTTPException, status, Response, APIRouter, UploadFile, File
 from app import database, utils, schemas, models
 from app.database import get_db
 from sqlalchemy.orm import Session
@@ -16,16 +16,33 @@ def get_users(db: Session = Depends(get_db), current_user = Depends(get_current_
     users = db.query(models.User).all()
     return users
 
-# create a user
-@router.post("/", status_code = status.HTTP_201_CREATED, response_model = schemas.User)
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.User)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    # Hash the password
     hashed_pass = utils.password_hash(user.password)
     user.password = hashed_pass
+    # Create a new user with profile picture
     new_user = models.User(**user.dict())
-    db.add(new_user)
+    # Add user to database
+    try:
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="User already exists")
+    else:
+        return new_user
+
+@router.post("/profile", status_code=status.HTTP_201_CREATED)
+def upload_profile(file: UploadFile = File(...), current_user = Depends(get_current_user), db: Session = Depends(get_db)):
+    contents = file.read()
+    # new photo obj
+    new_profile = models.Profile(current_user.id, contents)
+    # save it to db
+    db.add(new_profile)
     db.commit()
-    db.refresh(new_user)    # returning * in postgresql
-    return new_user
+    db.refresh(new_profile)
+    return new_profile
 
 # query a user
 @router.get("/{id}", response_model = schemas.User)

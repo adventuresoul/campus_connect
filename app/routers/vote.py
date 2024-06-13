@@ -13,6 +13,7 @@ router = APIRouter(
 @router.post("/", status_code=status.HTTP_201_CREATED)
 def update_vote(vote: schemas.Vote, db: Session = Depends(get_db), current_user: schemas.User = Depends(get_current_user)):
     # Check if post exists
+    print("Enter post-vote")
     post = db.query(models.Post).filter(models.Post.id == vote.post_id).first()
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Post with post_id {vote.post_id} does not exist")

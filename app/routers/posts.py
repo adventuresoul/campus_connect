@@ -24,7 +24,7 @@ def test(db: Session = Depends(get_db)):
 def get_posts(db: Session = Depends(get_db), current_user: int = Depends(get_current_user), limit: int = 10, skip: int = 0, search: Optional[str] = ""):
     posts_with_votes = db.query(models.Post, func.count(models.Vote.post_id)).join(
         models.Vote, models.Vote.post_id == models.Post.id, isouter=True).group_by(models.Post.id).filter(models.Post.title.contains(search)).limit(limit).offset(skip).all()
-
+    
     posts_response = []
     for post, total_votes in posts_with_votes:
         post_dict = post.__dict__

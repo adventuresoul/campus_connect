@@ -1,6 +1,7 @@
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
 import enum
+from typing import Optional
 
 ## Users
 class UserBase(BaseModel):

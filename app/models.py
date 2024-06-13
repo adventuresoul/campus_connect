@@ -1,5 +1,5 @@
 from app.database import Base
-from sqlalchemy import Column, Integer, String, Text, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, Boolean, ForeignKey, LargeBinary
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 from sqlalchemy import text
 from sqlalchemy.orm import relationship, Session
@@ -27,11 +27,22 @@ class User(Base):
     id = Column(Integer, primary_key = True)
     username = Column(String, nullable = False)
     email = Column(String, nullable = False, unique = True)
+    profilePhoto = Column(LargeBinary)
     password = Column(String, nullable = False)
     created_at = Column(TIMESTAMP(timezone = True), nullable = False, server_default = text('now()'))
 
     def __repr__(self):
         return f"<User(id = {self.id}, username = {self.username}, email = {self.email})>"
+
+class Profile(Base):
+    __tablename__ = "ProfilePhoto"
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("Users.id", ondelete="CASCADE"), nullable=False),
+    photo = Column(LargeBinary)
+
+    def __repr__(self):
+        return f"<Profile Photo of User {self.user_id}>"
+
     
 
 class Vote(Base):
