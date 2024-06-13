@@ -79,4 +79,6 @@ class Vote(BaseModel):
     post_id: int
     vote_value: int
     
-
+# Normal message format, (message: successful)
+class Message(BaseModel):
+    message: str

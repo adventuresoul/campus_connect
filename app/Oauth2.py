@@ -52,5 +52,5 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     userid = verify_access_token(token, credentials_exception)
     # upon successfull verification of token, query the user as per token data
     user = db.query(User).filter(User.id == userid).first()
-    # return the user id
+    # return the user obj
     return user

@@ -33,16 +33,24 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     else:
         return new_user
 
-@router.post("/profile", status_code=status.HTTP_201_CREATED)
-def upload_profile(file: UploadFile = File(...), current_user = Depends(get_current_user), db: Session = Depends(get_db)):
-    contents = file.read()
-    # new photo obj
-    new_profile = models.Profile(current_user.id, contents)
-    # save it to db
-    db.add(new_profile)
-    db.commit()
-    db.refresh(new_profile)
-    return new_profile
+@router.post("/profile/{id}", status_code=status.HTTP_202_ACCEPTED, response_model=schemas.Message)
+async def upload_profile(id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
+    if not file.content_type.startswith('image/'):
+        return {"error": "Invalid file type"}
+    # read the content
+    contents = await file.read()
+    # create new user profile phot obj
+    new_profile = models.Profile(user_id=id, photo=contents)
+    # error handling
+    try:
+        db.add(new_profile)
+        db.commit()
+        db.refresh(new_profile)
+    except Exception as e:
+        db.rollback()
+        return {"error": str(e)}
+
+    return {"message": "Photo uploaded successfully"}
 
 # query a user
 @router.get("/{id}", response_model = schemas.User)
