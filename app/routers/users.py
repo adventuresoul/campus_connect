@@ -40,7 +40,7 @@ def create_user(username: str = Form(...),
 async def upload_profile(file: UploadFile = File(...), current_user = Depends(get_current_user), db: Session = Depends(get_db)):
     contents = await file.read()
     # new photo obj
-    new_profile = models.Profile(current_user.id, contents)
+    new_profile = models.Profile(user_id = current_user.id, photo = contents)
     # save it to db
     db.add(new_profile)
     db.commit()

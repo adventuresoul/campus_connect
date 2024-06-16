@@ -41,7 +41,6 @@ class PostCreate(PostBase):
 class PostUpdate(PostBase):
     pass
 
-# response model
 class Post(BaseModel):
     id: int
     title: str
@@ -50,7 +49,7 @@ class Post(BaseModel):
     user_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True  # Corrected config key for Pydantic v2
 
 class PostOut(BaseModel):
     post: Post

@@ -31,6 +31,8 @@ def get_posts(db: Session = Depends(get_db), current_user: int = Depends(get_cur
     for post, total_votes in posts_with_votes:
         post_dict = post.__dict__
         post_dict['total_votes'] = total_votes
+        if post_dict.get('content_file'):
+            post_dict['content_file'] = convert_bytes_to_base64(post_dict['content_file'])
         posts_response.append(post_dict)
 
     return posts_response
@@ -40,7 +42,9 @@ def get_posts(db: Session = Depends(get_db), current_user: int = Depends(get_cur
 def get_post(id: int, db: Session = Depends(get_db), user=Depends(get_current_user)):
     post = db.query(models.Post).filter(models.Post.id == id).first()
     if post:
-        return post
+        if post.content_file:
+            post.content_file = convert_bytes_to_base64(post.content_file)
+            return post
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"post with {id} not found")
 
@@ -74,11 +78,11 @@ def delete_post(id: int, db: Session = Depends(get_db), user=Depends(get_current
     post_query = db.query(models.Post).filter(models.Post.id == id)
     if not post_query.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Post with id = {id} not found")
-    if post_query.first().owner_id != user.id:
+    if post_query.first().user_id != user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied for requested action")
     post_query.delete(synchronize_session=False)
     db.commit()      
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
+    return {"message": "Post deleted succesfully"}
 
 # update a post
 @router.put("/{id}", status_code=status.HTTP_200_OK, response_model=schemas.Post)
