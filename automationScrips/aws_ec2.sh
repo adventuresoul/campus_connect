@@ -35,3 +35,5 @@ sudo ufw enable
 
 # enable the machine to listen on port 8000
 sudo ufw allow 8000
+
+echo "Add .env file"
